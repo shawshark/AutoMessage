@@ -19,7 +19,7 @@ import lombok.Setter;
 public class AutoMessager extends JavaPlugin implements CommandExecutor {
 	
 	@Getter@Setter public HashMap<Integer, String> messages = new HashMap<Integer, String>();
-	@Getter@Setter public int messageid = 1; // this is the currect message id we are up to.
+	@Getter@Setter public int messageid; // this is the currect message id we are up to.
 	
 	@Getter@Setter public int timer = 40; // default 40
 	
@@ -44,6 +44,8 @@ public class AutoMessager extends JavaPlugin implements CommandExecutor {
 	public void loadMessages() {
 		
 		getMessages().clear();
+		
+		setMessageid(1);
 		
 		setTimer(getConfig().getInt("timer"));
 		
