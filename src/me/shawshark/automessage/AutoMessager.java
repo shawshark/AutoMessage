@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,9 +20,14 @@ import lombok.Setter;
 public class AutoMessager extends JavaPlugin implements CommandExecutor {
 	
 	@Getter@Setter public HashMap<Integer, String> messages = new HashMap<Integer, String>();
+	
 	@Getter@Setter public int messageid; // this is the currect message id we are up to.
+	@Getter@Setter public int lastMessageID = -1;
+	@Getter@Setter public int secondLastMessageID = -1;
+	@Getter@Setter public int thirdlastMessageID = -1;
 	
 	@Getter@Setter public int timer = 40; // default 40
+	@Setter public boolean random;
 	
 	@Getter@Setter public int bukkitidTask;
 	
@@ -34,6 +40,12 @@ public class AutoMessager extends JavaPlugin implements CommandExecutor {
 		List<String> defaultMessages = new ArrayList<String>();
 		defaultMessages.add("&eThis is default message 1, Please change this in &cconfig.yml");
 		defaultMessages.add("&cThis is default message 2, You can change this in &cconfig.yml");
+		defaultMessages.add("&fThis is default message 3, You can change this in &cconfig.yml");
+		defaultMessages.add("&bThis is default message 4, You can change this in &cconfig.yml");
+		defaultMessages.add("&6This is default message 5, You can change this in &cconfig.yml");
+		defaultMessages.add("&7This is default message 6, You can change this in &cconfig.yml");
+		
+		getConfig().addDefault("Random", false);
 		
 		getConfig().addDefault("Messages", defaultMessages);
 		getConfig().options().copyDefaults(true);
@@ -46,6 +58,9 @@ public class AutoMessager extends JavaPlugin implements CommandExecutor {
 		getMessages().clear();
 		
 		setMessageid(1);
+		setLastMessageID(-1);
+		
+		setRandom(getConfig().getBoolean("Random", false));
 		
 		setTimer(getConfig().getInt("timer"));
 		
@@ -71,22 +86,45 @@ public class AutoMessager extends JavaPlugin implements CommandExecutor {
 					
 					for(Entry<Integer, String> i : getMessages().entrySet()) {
 						
-						if(i.getKey() == getMessageid()) {
+						if(random) {
+							int randomgen = getRandom();
+							if(i.getKey() == randomgen) {
+								if(getLastMessageID() == randomgen || getSecondLastMessageID() == randomgen || getThirdlastMessageID() == randomgen) {
+									continue;
+								} else {
+									
+									String msg = i.getValue();
+									Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', msg));
+									setThirdlastMessageID(getSecondLastMessageID());
+									setSecondLastMessageID(getLastMessageID());
+									setLastMessageID(i.getKey());
+									break;
+									
+								}
+							}
+						} else {
 							
-							String message = i.getValue();
-							messageid++;
 							
-							Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
-							
-							//if we are past the set amount of messages, go back to the start.
-							if(getMessageid() == getMessages().size() + 1) {
-								setMessageid(1);
+							if(i.getKey() == getMessageid()) {
+								
+								String message = i.getValue();
+								messageid++;
+								
+								Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', message));
+								
+								//if we are past the set amount of messages, go back to the start.
+								if(getMessageid() == getMessages().size() + 1) {
+									setMessageid(1);
+								}
+								
+								break;
+								
+								
 							}
 							
-							break;
-							
-							
 						}
+						
+						
 					}
 					
 				}
@@ -97,6 +135,15 @@ public class AutoMessager extends JavaPlugin implements CommandExecutor {
 			} // for test reasons every 5 seconds.
 		}.runTaskTimerAsynchronously(this, 100, getTimer() * 20).getTaskId();
 		
+	}
+	
+	public int getRandom() {
+		int number = new Random().nextInt(getMessages().size());
+		if(number == 0) {
+			return 1;
+		} else {
+			return number;
+		}
 	}
 
 
