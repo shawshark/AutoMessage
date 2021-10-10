@@ -3,7 +3,6 @@ plugins {
 }
 
 group = 'me.shawshark'
-version = '1.0'
 
 repositories {
     mavenCentral()

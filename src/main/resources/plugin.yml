@@ -1,4 +1,4 @@
-name: Automessage
+name: AutoMessage
 version: '${version}'
 main: me.shawshark.automessage.AutoMessager
 api-version: 1.15
