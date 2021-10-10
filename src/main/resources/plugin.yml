@@ -1,0 +1,8 @@
+name: Automessage
+version: '${version}'
+main: me.shawshark.automessage.AutoMessager
+api-version: 1.15
+authors: [ shawshark ]
+
+commands:
+  automessage:
